@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Discussion Board</title>
+  <title>Worldwide chat</title>
   <style>
     * {
       margin: 0;
@@ -436,7 +436,7 @@
     <div class="login-screen" id="loginScreen">
       <div class="login-box">
         <div class="emoji">💬</div>
-        <h1>Discussion Board</h1>
+        <h1>Worldwide chat</h1>
         <p>Connect and chat with friends</p>
         <div class="error-message" id="errorMessage"></div>
         <input type="email" id="emailInput" placeholder="Email (@gmail.com or @icloud.com)" />
