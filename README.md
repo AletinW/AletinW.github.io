@@ -2,7 +2,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ephemeral - Disappearing Messages</title>
+  <title>Snapchat - Disappearing Messages</title>
   <style>
     * {
       margin: 0;
@@ -427,7 +427,7 @@
   <div id="loginScreen" class="login-screen">
     <div class="login-box">
       <div class="emoji">👻</div>
-      <h1>Ephemeral</h1>
+      <h1>Snapchat</h1>
       <p>Messages that disappear</p>
       <input type="email" id="emailInput" placeholder="Enter your email">
       <button onclick="login()">Sign In</button>
@@ -437,7 +437,7 @@
   <!-- Main App Screen -->
   <div id="appScreen" class="app-screen">
     <div class="header">
-      <h1>👻 Ephemeral</h1>
+      <h1>👻 Snapchat</h1>
       <div class="header-buttons">
         <button onclick="openCamera()">📷</button>
         <button>👤</button>
