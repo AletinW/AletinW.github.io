@@ -1,8 +1,9 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snapchat - Disappearing Messages</title>
+  <title>Discussion Board</title>
   <style>
     * {
       margin: 0;
@@ -90,6 +91,13 @@
       opacity: 0.9;
     }
 
+    .error-message {
+      color: #ef4444;
+      font-size: 14px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
     /* Main App */
     .app-screen {
       display: none;
@@ -111,14 +119,25 @@
       color: #667eea;
     }
 
+    .header-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .current-user {
+      color: #666;
+      font-size: 14px;
+    }
+
     .header-buttons button {
       background: #f3f4f6;
       border: none;
-      padding: 10px;
+      padding: 10px 15px;
       margin-left: 10px;
-      border-radius: 50%;
+      border-radius: 20px;
       cursor: pointer;
-      font-size: 20px;
+      font-size: 14px;
       transition: background 0.3s;
     }
 
@@ -133,11 +152,13 @@
       overflow: hidden;
     }
 
-    /* Friends List */
+    /* Users List */
     .friends-list {
       width: 300px;
       border-right: 1px solid #e5e7eb;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     .friends-header {
@@ -145,6 +166,23 @@
       border-bottom: 1px solid #e5e7eb;
       font-weight: bold;
       color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .add-user-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .add-user-btn:hover {
+      background: #5568d3;
     }
 
     .friend-item {
@@ -155,6 +193,7 @@
       display: flex;
       align-items: center;
       gap: 15px;
+      position: relative;
     }
 
     .friend-item:hover {
@@ -167,6 +206,15 @@
 
     .friend-avatar {
       font-size: 32px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .friend-info {
+      flex: 1;
     }
 
     .friend-info h3 {
@@ -177,6 +225,19 @@
     .friend-info p {
       font-size: 14px;
       color: #666;
+    }
+
+    .edit-name-btn {
+      background: #f3f4f6;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .edit-name-btn:hover {
+      background: #e5e7eb;
     }
 
     /* Chat Area */
@@ -228,16 +289,20 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
-    .message-photo {
-      max-width: 100%;
-      border-radius: 10px;
-      margin-bottom: 8px;
+    .message-text {
+      word-wrap: break-word;
     }
 
     .message-time {
       font-size: 11px;
       margin-top: 5px;
       opacity: 0.8;
+    }
+
+    .message-sender {
+      font-weight: bold;
+      font-size: 12px;
+      margin-bottom: 5px;
     }
 
     /* Input Area */
@@ -247,49 +312,9 @@
       background: white;
     }
 
-    .photo-preview {
-      margin-bottom: 15px;
-      position: relative;
-      display: inline-block;
-    }
-
-    .photo-preview img {
-      height: 100px;
-      border-radius: 10px;
-    }
-
-    .photo-preview button {
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 25px;
-      height: 25px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
     .input-controls {
       display: flex;
       gap: 10px;
-    }
-
-    .input-controls button {
-      background: #ede9fe;
-      color: #667eea;
-      border: none;
-      padding: 12px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 18px;
-      transition: background 0.3s;
-    }
-
-    .input-controls button:hover {
-      background: #ddd6fe;
     }
 
     .input-controls input {
@@ -305,101 +330,19 @@
       border-color: #667eea;
     }
 
-    .input-controls .send-btn {
+    .input-controls button {
       background: #667eea;
       color: white;
-    }
-
-    .input-controls .send-btn:hover {
-      background: #5568d3;
-    }
-
-    /* Camera Screen */
-    .camera-screen {
-      display: none;
-      background: black;
-      height: 100vh;
-      flex-direction: column;
-    }
-
-    .camera-view {
-      flex: 1;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #cameraVideo, #capturedImage {
-      max-width: 100%;
-      max-height: 100%;
-    }
-
-    .camera-controls {
-      padding: 30px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 30px;
-    }
-
-    .capture-btn {
-      width: 70px;
-      height: 70px;
-      background: white;
-      border: 4px solid #ccc;
-      border-radius: 50%;
-      cursor: pointer;
-    }
-
-    .camera-action-btn {
+      border: none;
       padding: 12px 24px;
-      border: none;
       border-radius: 25px;
+      cursor: pointer;
       font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: opacity 0.3s;
+      transition: background 0.3s;
     }
 
-    .camera-action-btn:hover {
-      opacity: 0.8;
-    }
-
-    .retake-btn {
-      background: #4b5563;
-      color: white;
-    }
-
-    .use-photo-btn {
-      background: #667eea;
-      color: white;
-    }
-
-    .close-camera {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background: rgba(0,0,0,0.5);
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 24px;
-      width: 45px;
-      height: 45px;
-    }
-
-    .start-camera-btn {
-      padding: 15px 30px;
-      background: white;
-      color: #667eea;
-      border: none;
-      border-radius: 25px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
+    .input-controls button:hover {
+      background: #5568d3;
     }
 
     .empty-state {
@@ -417,184 +360,340 @@
       opacity: 0.5;
     }
 
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .modal-content input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 15px;
+      font-size: 14px;
+      margin-bottom: 15px;
+      outline: none;
+    }
+
+    .modal-content input:focus {
+      border-color: #667eea;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .modal-buttons button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .modal-buttons .cancel-btn {
+      background: #f3f4f6;
+      color: #333;
+    }
+
+    .modal-buttons .save-btn {
+      background: #667eea;
+      color: white;
+    }
+
     .hidden {
       display: none !important;
     }
   </style>
 </head>
 <body>
-  <!-- Login Screen -->
-  <div id="loginScreen" class="login-screen">
-    <div class="login-box">
-      <div class="emoji">👻</div>
-      <h1>Snapchat</h1>
-      <p>Messages that disappear</p>
-      <input type="email" id="emailInput" placeholder="Enter your email">
-      <button onclick="login()">Sign In</button>
-    </div>
-  </div>
-
-  <!-- Main App Screen -->
-  <div id="appScreen" class="app-screen">
-    <div class="header">
-      <h1>👻 Snapchat</h1>
-      <div class="header-buttons">
-        <button onclick="openCamera()">📷</button>
-        <button>👤</button>
+  <div class="container">
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+      <div class="login-box">
+        <div class="emoji">💬</div>
+        <h1>Discussion Board</h1>
+        <p>Connect and chat with friends</p>
+        <div class="error-message" id="errorMessage"></div>
+        <input type="email" id="emailInput" placeholder="Email (@gmail.com or @icloud.com)" />
+        <input type="password" id="passwordInput" placeholder="Password" />
+        <input type="password" id="confirmPasswordInput" placeholder="Confirm Password" />
+        <button onclick="login()">Sign In</button>
       </div>
     </div>
 
-    <div class="chat-container">
-      <!-- Friends List -->
-      <div class="friends-list">
-        <div class="friends-header">👥 Friends</div>
-        <div class="friend-item" onclick="selectFriend('friend1', 'Alex Chen', '👤')">
-          <div class="friend-avatar">👤</div>
-          <div class="friend-info">
-            <h3>Alex Chen</h3>
-            <p>Tap to chat</p>
-          </div>
-        </div>
-        <div class="friend-item" onclick="selectFriend('friend2', 'Sam Rivera', '👤')">
-          <div class="friend-avatar">👤</div>
-          <div class="friend-info">
-            <h3>Sam Rivera</h3>
-            <p>Tap to chat</p>
+    <!-- Main App -->
+    <div class="app-screen" id="appScreen">
+      <div class="header">
+        <h1>💬 Discussion Board</h1>
+        <div class="header-info">
+          <span class="current-user" id="currentUserName"></span>
+          <div class="header-buttons">
+            <button onclick="logout()">Logout</button>
           </div>
         </div>
       </div>
 
-      <!-- Chat Area -->
-      <div class="chat-area" id="chatArea">
-        <div class="empty-state">
-          <div class="icon">👥</div>
-          <p>Select a friend to start chatting</p>
+      <div class="chat-container">
+        <!-- Users List -->
+        <div class="friends-list">
+          <div class="friends-header">
+            👥 Users
+            <button class="add-user-btn" onclick="openAddUserModal()">+ Add</button>
+          </div>
+          <div id="usersList"></div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-area" id="chatArea">
+          <div class="empty-state">
+            <div class="icon">👥</div>
+            <p>Select a user to start chatting</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Camera Screen -->
-  <div id="cameraScreen" class="camera-screen">
-    <div class="camera-view">
-      <button class="close-camera" onclick="closeCamera()">✕</button>
-      <video id="cameraVideo" autoplay playsinline class="hidden"></video>
-      <img id="capturedImage" class="hidden">
-      <button id="startCameraBtn" class="start-camera-btn" onclick="startCamera()">Start Camera</button>
-    </div>
-    <div class="camera-controls">
-      <button id="captureBtn" class="capture-btn hidden" onclick="capturePhoto()"></button>
-      <button id="retakeBtn" class="camera-action-btn retake-btn hidden" onclick="retakePhoto()">Retake</button>
-      <button id="usePhotoBtn" class="camera-action-btn use-photo-btn hidden" onclick="usePhoto()">Use Photo</button>
+  <!-- Add User Modal -->
+  <div class="modal" id="addUserModal">
+    <div class="modal-content">
+      <h2>Add New User</h2>
+      <input type="text" id="newUserName" placeholder="Name" />
+      <input type="email" id="newUserEmail" placeholder="Email" />
+      <div class="modal-buttons">
+        <button class="cancel-btn" onclick="closeAddUserModal()">Cancel</button>
+        <button class="save-btn" onclick="addNewUser()">Add User</button>
+      </div>
     </div>
   </div>
 
-  <canvas id="canvas" style="display: none;"></canvas>
+  <!-- Edit Name Modal -->
+  <div class="modal" id="editNameModal">
+    <div class="modal-content">
+      <h2>Edit Name</h2>
+      <input type="text" id="editUserName" placeholder="New Name" />
+      <div class="modal-buttons">
+        <button class="cancel-btn" onclick="closeEditNameModal()">Cancel</button>
+        <button class="save-btn" onclick="saveUserName()">Save</button>
+      </div>
+    </div>
+  </div>
 
-<script>
+  <script>
     var currentUser = null;
     var selectedFriend = null;
     var messages = [];
-    var cameraStream = null;
-    var capturedPhotoData = null;
+    var editingUserId = null;
 
-    function login() {
-      var email = document.getElementById('emailInput').value;
-      if (email) {
-        currentUser = { id: 'user1', email: email, name: email.split('@')[0] };
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('appScreen').style.display = 'flex';
-      }
+    // Initial users
+    var users = [
+      { id: 'user1', name: 'Alex Chen', email: 'alex.chen@gmail.com', avatar: '👤' },
+      { id: 'user2', name: 'Sam Rivera', email: 'sam.rivera@icloud.com', avatar: '👤' },
+      { id: 'user3', name: 'Jordan Kim', email: 'jordan.kim@gmail.com', avatar: '👤' },
+      { id: 'user4', name: 'Taylor Brooks', email: 'taylor.brooks@icloud.com', avatar: '👤' },
+      { id: 'user5', name: 'Morgan Lee', email: 'morgan.lee@gmail.com', avatar: '👤' },
+      { id: 'user6', name: 'Casey Martinez', email: 'casey.m@icloud.com', avatar: '👤' },
+      { id: 'user7', name: 'Riley Johnson', email: 'riley.j@gmail.com', avatar: '👤' },
+      { id: 'user8', name: 'Avery Smith', email: 'avery.smith@icloud.com', avatar: '👤' },
+      { id: 'user9', name: 'Dakota Williams', email: 'dakota.w@gmail.com', avatar: '👤' },
+      { id: 'user10', name: 'Quinn Davis', email: 'quinn.davis@icloud.com', avatar: '👤' }
+    ];
+
+    function showError(message) {
+      var errorEl = document.getElementById('errorMessage');
+      errorEl.textContent = message;
+      errorEl.style.display = 'block';
     }
 
-    function selectFriend(id, name, avatar) {
-      selectedFriend = { id: id, name: name, avatar: avatar };
+    function hideError() {
+      document.getElementById('errorMessage').style.display = 'none';
+    }
+
+    function login() {
+      hideError();
       
+      var email = document.getElementById('emailInput').value.trim();
+      var password = document.getElementById('passwordInput').value;
+      var confirmPassword = document.getElementById('confirmPasswordInput').value;
+
+      // Validate email ends with @gmail.com or @icloud.com
+      if (!email.endsWith('@gmail.com') && !email.endsWith('@icloud.com')) {
+        showError('Email must end with @gmail.com or @icloud.com');
+        return;
+      }
+
+      // Validate password fields
+      if (!password) {
+        showError('Please enter a password');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showError('Passwords do not match');
+        return;
+      }
+
+      if (password.length < 6) {
+        showError('Password must be at least 6 characters');
+        return;
+      }
+
+      // Create current user
+      currentUser = {
+        id: 'currentUser',
+        email: email,
+        name: email.split('@')[0]
+      };
+
+      document.getElementById('currentUserName').textContent = currentUser.name;
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('appScreen').style.display = 'flex';
+      
+      renderUsersList();
+    }
+
+    function logout() {
+      currentUser = null;
+      selectedFriend = null;
+      messages = [];
+      
+      document.getElementById('emailInput').value = '';
+      document.getElementById('passwordInput').value = '';
+      document.getElementById('confirmPasswordInput').value = '';
+      
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('appScreen').style.display = 'none';
+    }
+
+    function renderUsersList() {
+      var html = '';
+      for (var i = 0; i < users.length; i++) {
+        var user = users[i];
+        html += '<div class="friend-item" onclick="selectFriend(\'' + user.id + '\')">' +
+                '<div class="friend-avatar">' + user.avatar + '</div>' +
+                '<div class="friend-info">' +
+                '<h3>' + user.name + '</h3>' +
+                '<p>' + user.email + '</p>' +
+                '</div>' +
+                '<button class="edit-name-btn" onclick="event.stopPropagation(); openEditNameModal(\'' + user.id + '\')">✏️</button>' +
+                '</div>';
+      }
+      document.getElementById('usersList').innerHTML = html;
+    }
+
+    function selectFriend(id) {
+      for (var i = 0; i < users.length; i++) {
+        if (users[i].id === id) {
+          selectedFriend = users[i];
+          break;
+        }
+      }
+
       var items = document.querySelectorAll('.friend-item');
-      for (var i = 0; i < items.length; i++) {
-        items[i].classList.remove('active');
+      for (var j = 0; j < items.length; j++) {
+        items[j].classList.remove('active');
       }
-      if (window.event && window.event.target) {
-        var target = window.event.target.closest('.friend-item');
-        if (target) target.classList.add('active');
+
+      if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
       }
-      
+
       var chatHTML = '<div class="chat-header">' +
-          '<div class="friend-avatar">' + avatar + '</div>' +
-          '<h2>' + name + '</h2>' +
-        '</div>' +
-        '<div class="messages-container" id="messagesContainer"></div>' +
-        '<div class="input-area">' +
-          '<div id="photoPreview"></div>' +
-          '<div class="input-controls">' +
-            '<button onclick="openCamera()">📷</button>' +
-            '<input type="text" id="messageInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">' +
-            '<button class="send-btn" onclick="sendMessage()">➤</button>' +
-          '</div>' +
-        '</div>';
-      
+                    '<div class="friend-avatar">' + selectedFriend.avatar + '</div>' +
+                    '<div class="friend-info">' +
+                    '<h3>' + selectedFriend.name + '</h3>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="messages-container" id="messagesContainer"></div>' +
+                    '<div class="input-area">' +
+                    '<div class="input-controls">' +
+                    '<input type="text" id="messageInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)" />' +
+                    '<button onclick="sendMessage()">Send</button>' +
+                    '</div>' +
+                    '</div>';
+
       document.getElementById('chatArea').innerHTML = chatHTML;
       renderMessages();
     }
 
     function sendMessage() {
       if (!selectedFriend) return;
-      
+
       var messageInput = document.getElementById('messageInput');
       var text = messageInput.value.trim();
       
-      if (!text && !capturedPhotoData) return;
-      
+      if (!text) return;
+
       var message = {
         id: Date.now(),
         sender: currentUser.id,
+        senderName: currentUser.name,
         recipient: selectedFriend.id,
         text: text,
-        photo: capturedPhotoData,
-        timestamp: Date.now(),
-        expiresAt: Date.now() + 10000
+        timestamp: Date.now()
       };
-      
+
       messages.push(message);
       messageInput.value = '';
-      capturedPhotoData = null;
-      document.getElementById('photoPreview').innerHTML = '';
-      
       renderMessages();
     }
 
     function renderMessages() {
       if (!selectedFriend) return;
-      
+
       var container = document.getElementById('messagesContainer');
       if (!container) return;
-      
-      var now = Date.now();
+
       var chatMessages = [];
       for (var i = 0; i < messages.length; i++) {
         var m = messages[i];
-        if (((m.sender === currentUser.id && m.recipient === selectedFriend.id) ||
-             (m.sender === selectedFriend.id && m.recipient === currentUser.id)) &&
-            m.expiresAt > now) {
+        if ((m.sender === currentUser.id && m.recipient === selectedFriend.id) ||
+            (m.sender === selectedFriend.id && m.recipient === currentUser.id)) {
           chatMessages.push(m);
         }
       }
-      
+
       var html = '';
       for (var j = 0; j < chatMessages.length; j++) {
         var msg = chatMessages[j];
         var isSent = msg.sender === currentUser.id;
-        var timeLeft = Math.max(0, Math.floor((msg.expiresAt - now) / 1000));
-        
+        var date = new Date(msg.timestamp);
+        var timeStr = date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
+
         html += '<div class="message ' + (isSent ? 'sent' : 'received') + '">' +
-          '<div class="message-bubble">' +
-            (msg.photo ? '<img src="' + msg.photo + '" class="message-photo">' : '') +
-            (msg.text ? '<div>' + msg.text + '</div>' : '') +
-            '<div class="message-time">⏱️ Disappears in ' + timeLeft + 's</div>' +
-          '</div>' +
-        '</div>';
+                '<div class="message-bubble">' +
+                (!isSent ? '<div class="message-sender">' + msg.senderName + '</div>' : '') +
+                '<div class="message-text">' + msg.text + '</div>' +
+                '<div class="message-time">' + timeStr + '</div>' +
+                '</div>' +
+                '</div>';
       }
-      
+
       container.innerHTML = html;
       container.scrollTop = container.scrollHeight;
     }
@@ -605,107 +704,95 @@
       }
     }
 
-    function openCamera() {
-      document.getElementById('appScreen').style.display = 'none';
-      document.getElementById('cameraScreen').style.display = 'flex';
+    function openAddUserModal() {
+      document.getElementById('addUserModal').style.display = 'flex';
+      document.getElementById('newUserName').value = '';
+      document.getElementById('newUserEmail').value = '';
     }
 
-    function closeCamera() {
-      stopCamera();
-      document.getElementById('cameraScreen').style.display = 'none';
-      document.getElementById('appScreen').style.display = 'flex';
+    function closeAddUserModal() {
+      document.getElementById('addUserModal').style.display = 'none';
     }
 
-    function startCamera() {
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(function(stream) {
-          cameraStream = stream;
-          var video = document.getElementById('cameraVideo');
-          video.srcObject = stream;
+    function addNewUser() {
+      var name = document.getElementById('newUserName').value.trim();
+      var email = document.getElementById('newUserEmail').value.trim();
+
+      if (!name || !email) {
+        alert('Please enter both name and email');
+        return;
+      }
+
+      if (!email.endsWith('@gmail.com') && !email.endsWith('@icloud.com')) {
+        alert('Email must end with @gmail.com or @icloud.com');
+        return;
+      }
+
+      var newUser = {
+        id: 'user' + Date.now(),
+        name: name,
+        email: email,
+        avatar: '👤'
+      };
+
+      users.push(newUser);
+      renderUsersList();
+      closeAddUserModal();
+    }
+
+    function openEditNameModal(userId) {
+      editingUserId = userId;
+      var user = null;
+      for (var i = 0; i < users.length; i++) {
+        if (users[i].id === userId) {
+          user = users[i];
+          break;
+        }
+      }
+
+      if (user) {
+        document.getElementById('editUserName').value = user.name;
+        document.getElementById('editNameModal').style.display = 'flex';
+      }
+    }
+
+    function closeEditNameModal() {
+      document.getElementById('editNameModal').style.display = 'none';
+      editingUserId = null;
+    }
+
+    function saveUserName() {
+      var newName = document.getElementById('editUserName').value.trim();
+      
+      if (!newName) {
+        alert('Please enter a name');
+        return;
+      }
+
+      for (var i = 0; i < users.length; i++) {
+        if (users[i].id === editingUserId) {
+          users[i].name = newName;
           
-          document.getElementById('startCameraBtn').classList.add('hidden');
-          document.getElementById('cameraVideo').classList.remove('hidden');
-          document.getElementById('captureBtn').classList.remove('hidden');
-        })
-        .catch(function(err) {
-          alert('Camera access denied or not available');
-        });
-    }
-
-    function stopCamera() {
-      if (cameraStream) {
-        var tracks = cameraStream.getTracks();
-        for (var i = 0; i < tracks.length; i++) {
-          tracks[i].stop();
-        }
-        cameraStream = null;
-      }
-      document.getElementById('cameraVideo').classList.add('hidden');
-      document.getElementById('capturedImage').classList.add('hidden');
-      document.getElementById('captureBtn').classList.add('hidden');
-      document.getElementById('retakeBtn').classList.add('hidden');
-      document.getElementById('usePhotoBtn').classList.add('hidden');
-      document.getElementById('startCameraBtn').classList.remove('hidden');
-    }
-
-    function capturePhoto() {
-      var video = document.getElementById('cameraVideo');
-      var canvas = document.getElementById('canvas');
-      var context = canvas.getContext('2d');
-      
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      context.drawImage(video, 0, 0);
-      
-      capturedPhotoData = canvas.toDataURL('image/jpeg');
-      
-      var img = document.getElementById('capturedImage');
-      img.src = capturedPhotoData;
-      img.classList.remove('hidden');
-      
-      video.classList.add('hidden');
-      document.getElementById('captureBtn').classList.add('hidden');
-      document.getElementById('retakeBtn').classList.remove('hidden');
-      document.getElementById('usePhotoBtn').classList.remove('hidden');
-      
-      stopCamera();
-    }
-
-    function retakePhoto() {
-      capturedPhotoData = null;
-      document.getElementById('capturedImage').classList.add('hidden');
-      document.getElementById('retakeBtn').classList.add('hidden');
-      document.getElementById('usePhotoBtn').classList.add('hidden');
-      startCamera();
-    }
-
-    function usePhoto() {
-      if (capturedPhotoData) {
-        var photoHTML = '<div class="photo-preview">' +
-            '<img src="' + capturedPhotoData + '">' +
-            '<button onclick="removePhoto()">✕</button>' +
-          '</div>';
-        document.getElementById('photoPreview').innerHTML = photoHTML;
-      }
-      closeCamera();
-    }
-
-    function removePhoto() {
-      capturedPhotoData = null;
-      document.getElementById('photoPreview').innerHTML = '';
-    }
-
-    setInterval(function() {
-      var now = Date.now();
-      var filteredMessages = [];
-      for (var i = 0; i < messages.length; i++) {
-        if (messages[i].expiresAt > now) {
-          filteredMessages.push(messages[i]);
+          // Update messages with old name
+          for (var j = 0; j < messages.length; j++) {
+            if (messages[j].sender === editingUserId) {
+              messages[j].senderName = newName;
+            }
+          }
+          
+          break;
         }
       }
-      messages = filteredMessages;
-      renderMessages();
-    }, 1000);
+
+      renderUsersList();
+      
+      if (selectedFriend && selectedFriend.id === editingUserId) {
+        selectedFriend.name = newName;
+        selectFriend(editingUserId);
+      }
+      
+      closeEditNameModal();
+    }
   </script>
 </body>
 </html>
